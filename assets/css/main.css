@@ -1,8 +1,8 @@
 @font-face {
-  font-family: 'RocknRoll One';
+  font-family: 'Open Sans Condensed';
   font-style: normal;
-  font-weight: 400;
-  src: url('../fonts/RocknRollOne-Regular.ttf') format('truetype');
+  font-weight: 700;
+  src: url('../fonts/OpenSans_Condensed-Bold.ttf') format('truetype');
 }
 
 * {
@@ -14,16 +14,30 @@
 header {
   display: flex;
   justify-content: center;
-  align-items: baseline;
   padding: 1rem;
-  background: #e4f4ff;
+  border-bottom: 1px solid #dedede;
 }
 
-header h1 {
-  font-family: 'RocknRoll One', sans-serif;
-  font-weight: 400;
-  text-transform: uppercase;
-  color: #52b4ff;
+.title-letter {
+  font-family: 'Open Sans Condensed';
+  font-weight: 700;
+  font-size: 20px;
+  color: #000000;
+  width: 36px;
+  height: 36px;
+  border: 1px solid #dedede;
+  border-radius: 5px;
+  margin: .1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.title-wailord {
+  width: 32px;
+  height: 32px;
+  background: url('../images/favicon32.png');
+  image-rendering: pixelated;
 }
 
 .pokesprite {
@@ -60,8 +74,8 @@ header h1 {
   background-image: url('../images/types/flying.png');
 }
 
-.ribbon.type-ice {
-  background-image: url('../images/types/ice.png');
+.ribbon.type-psychic {
+  background-image: url('../images/types/psychic.png');
 }
 
 .ribbon.too-short {
