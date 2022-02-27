@@ -1,0 +1,109 @@
+@font-face {
+  font-family: 'RocknRoll One';
+  font-style: normal;
+  font-weight: 400;
+  src: url('../fonts/RocknRollOne-Regular.ttf') format('truetype');
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+header {
+  display: flex;
+  justify-content: center;
+  align-items: baseline;
+  padding: 1rem;
+  background: #e4f4ff;
+}
+
+header h1 {
+  font-family: 'RocknRoll One', sans-serif;
+  font-weight: 400;
+  text-transform: uppercase;
+  color: #52b4ff;
+}
+
+.pokesprite {
+  margin-top: -16px;
+}
+
+.guesses {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 1rem;
+  justify-content: center;
+}
+
+.guess {
+  margin: 0 1rem 0 1rem;
+}
+
+.guessline {
+  display: flex;
+  align-items: center;
+  margin-bottom: .5rem;
+}
+
+.ribbon {
+  background: #dedede;
+  background-size: contain;
+  width: 200px;
+  height: 44px;
+  border-radius: 5px;
+  margin-right: .5rem;
+}
+
+.ribbon.type-flying {
+  background-image: url('../images/types/flying.png');
+}
+
+.ribbon.type-ice {
+  background-image: url('../images/types/ice.png');
+}
+
+.ribbon.too-short {
+  background-image: url('../images/guesses/too_short.png');
+}
+
+.ribbon.too-tall {
+  background-image: url('../images/guesses/too_tall.png');
+}
+
+.ribbon.too-light {
+  background-image: url('../images/guesses/too_light.png');
+}
+
+.ribbon.too-heavy {
+  background-image: url('../images/guesses/too_heavy.png');
+}
+
+.check {
+  background: #dedede;
+  width: 32px;
+  height: 32px;
+  border-radius: 5px;
+}
+
+.check.correct {
+  background-image: url('../images/guesses/2705.svg');
+}
+
+.check.wrong {
+  background-image: url('../images/guesses/1f6ab.svg');
+}
+
+.check.swap {
+  background-image: url('../images/guesses/1f503.svg');
+}
+
+.check.too-low {
+  background-image: url('../images/guesses/1f53c.svg');
+}
+
+.check.too-high {
+  background-image: url('../images/guesses/1f53d.svg');
+}
+

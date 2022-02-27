@@ -3,20 +3,48 @@
 
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="assets/css/main.css">
   <link rel="stylesheet" href="assets/css/pokesprite-pokemon-gen8.css">
+  <link rel="icon" href="assets/images/favicon32.png">
   <title>Wailordle</title>
-  <script src="scripts/main.js"></script>
+  <!-- <script src="scripts/main.js"></script> -->
 </head>
 
 <body>
-  <span class="pokesprite pokemon bulbasaur"></span>
-  <div id="elmApp"></div>
+  <header>
+    <h1>Wailordle</h1>
+    <span class="pokesprite pokemon wailord"></span>
+  </header>
+
+  <div class="guesses">
+    <article class="guess">
+      <section class="guessline">
+        <div class="ribbon type-flying"></div>
+        <div class="check swap"></div>
+      </section>
+      <section class="guessline">
+        <div class="ribbon type-ice"></div>
+        <div class="check wrong"></div>
+      </section>
+      <section class="guessline">
+        <div class="ribbon too-short"></div>
+        <div class="check too-low"></div>
+      </section>
+      <section class="guessline">
+        <div class="ribbon too-heavy"></div>
+        <div class="check too-high"></div>
+      </section>
+    </article>
+  </div>
+
+<!--   <div id="elmApp"></div>
   
   <script>
     var app = Elm.Main.init({
       node: document.getElementById('elmApp')
     });
-  </script>
+  </script> -->
 </body>
 
 </html>
