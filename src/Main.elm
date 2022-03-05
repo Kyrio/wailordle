@@ -1,17 +1,18 @@
 module Main exposing (..)
 
 import Browser
-import Html exposing (Html, button, div, text)
-import Html.Events exposing (onClick)
+import Html exposing (Html, div, form, input, text, button, datalist, option)
+import Html.Attributes exposing (class, id, type_, size, placeholder, spellcheck, autofocus, list, value)
+import Html.Events exposing (onInput, onSubmit)
 
 
 type alias Model =
-  Int
+  String
 
 
 type Signal
-  = Increment
-  | Decrement
+  = Typed String
+  | Submitted
 
 
 main =
@@ -20,23 +21,47 @@ main =
 
 init : Model
 init =
-  0
+  ""
 
 
 update : Signal -> Model -> Model
-update msg model =
-  case msg of
-    Increment ->
-      model + 1
-
-    Decrement ->
-      model - 1
+update signal model =
+  case signal of
+    Typed name ->
+      name
+    Submitted ->
+      ""
 
 
 view : Model -> Html Signal
 view model =
-  div []
-    [ button [ onClick Decrement ] [ text "-" ]
-    , div [] [ text (String.fromInt model) ]
-    , button [ onClick Increment ] [ text "+" ]
+  div [ class "app" ]
+  [ div [ class "guesses" ]
+    [ div [ class "guess" ]
+      ( List.repeat 4
+          ( div [ class "guessline" ]
+            [ div [ class "ribbon" ] []
+            , div [ class "check" ] []
+            ]
+          )
+      )
     ]
+  , form [ class "pokemon-search", onSubmit Submitted ]
+    [
+      input
+      [ type_ "search"
+      , value model
+      , size 30
+      --, list "pokemon"
+      , placeholder "Entrez le nom d'un Pokémon..."
+      , spellcheck False
+      , autofocus True
+      , onInput Typed
+      ]
+      []
+    , datalist [ id "pokemon" ]
+      [ option [ value "Bulbizarre" ] []
+      ]
+    , button [ type_ "submit", class "search" ] []
+    ]
+  ]
