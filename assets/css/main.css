@@ -66,6 +66,11 @@ header {
   align-items: center;
 }
 
+.alert {
+  font-family: 'Open Sans';
+  font-weight: 400;
+}
+
 .guesses {
   flex: 1;
   display: flex;
