@@ -7,6 +7,8 @@ import Json.Decode as J
 type alias GameData =
   { pokemonList : PokemonList
   , pokemonByName : PokemonByName
+  , pokemonFilteredList : List Pokemon
+  , chosen : Pokemon
   , search : String
   }
 

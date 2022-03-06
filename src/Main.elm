@@ -1,25 +1,30 @@
 module Main exposing (..)
 
 import Browser
-import Html exposing (Html, div, form, input, text, button, datalist, option, br)
+import Dict
+import Html exposing (Html, div, form, input, text, button, datalist, option, br, span)
 import Html.Attributes exposing (class, id, type_, size, placeholder, spellcheck, autofocus, list, value)
 import Html.Events exposing (onInput, onSubmit)
 import Http
+import Random
+import Random.List
 import Types exposing (..)
 
 
 type Model
-  = Ready GameData
-  | LoadingPokemonList
+  = LoadingPokemonList
   | LoadingPokemonByName PokemonList
   | Failure
+  | Ready (PokemonList, PokemonByName, List Pokemon)
+  | Chosen GameData
 
 
 type Signal
-  = Typed String
-  | Submitted
-  | ReceivedPokemonList (Result Http.Error PokemonList)
+  = ReceivedPokemonList (Result Http.Error PokemonList)
   | ReceivedPokemonByName (Result Http.Error PokemonByName)
+  | ChosePokemon (Maybe Pokemon, List Pokemon)
+  | Typed String
+  | Submitted
 
 
 main =
@@ -44,20 +49,6 @@ init _ =
 update : Signal -> Model -> (Model, Cmd Signal)
 update signal model =
   case signal of
-    Typed name ->
-      case model of
-        Ready data ->
-          (Ready { data | search = name }, Cmd.none)
-        _ ->
-          (model, Cmd.none)
-
-    Submitted ->
-      case model of
-        Ready data ->
-          (Ready { data | search = "" }, Cmd.none)
-        _ ->
-          (model, Cmd.none)
-
     ReceivedPokemonList result ->
       case result of
         Ok list ->
@@ -75,11 +66,48 @@ update signal model =
         Ok byName ->
           case model of
             LoadingPokemonByName list ->
-              (Ready { pokemonList = list, pokemonByName = byName, search = "" }, Cmd.none)
+              let
+                filteredList = Dict.values list
+              in
+                ( Ready (list, byName, filteredList)
+                , Random.generate ChosePokemon (Random.List.choose filteredList)
+                )
             _ ->
-              (Failure, Cmd.none)
+              (model, Cmd.none)
         Err _ ->
           (Failure, Cmd.none)
+
+    ChosePokemon (maybe, rest) ->
+      case model of
+        Ready (list, byName, filteredList) ->
+          case maybe of
+            Just pokemon ->
+              (Chosen
+                { pokemonList = list
+                , pokemonByName = byName
+                , pokemonFilteredList = filteredList
+                , chosen = pokemon
+                , search = ""
+                }
+              , Cmd.none)
+            Nothing ->
+              (model, Cmd.none)
+        _ ->
+          (model, Cmd.none)
+
+    Typed name ->
+      case model of
+        Chosen data ->
+          (Chosen { data | search = name }, Cmd.none)
+        _ ->
+          (model, Cmd.none)
+
+    Submitted ->
+      case model of
+        Chosen data ->
+          (Chosen { data | search = "" }, Cmd.none)
+        _ ->
+          (model, Cmd.none)
 
 
 subscriptions : Model -> Sub Signal
@@ -91,14 +119,16 @@ view : Model -> Html Signal
 view model =
   div [ class "app" ]
     ( case model of
-        Ready data ->
-          viewGame data
         LoadingPokemonList ->
           viewLoading
         LoadingPokemonByName _ ->
           viewLoading
         Failure ->
           viewFailure
+        Ready _ ->
+          viewReady
+        Chosen data ->
+          viewGame data
     )
 
 
@@ -114,6 +144,10 @@ viewGame gameData =
           )
       )
     ]
+  , div [ class "solution" ]
+      [ span [ class ("pokesprite pokemon " ++ gameData.chosen.identifier) ] []
+      , text gameData.chosen.species.names.fr
+      ]
   , form [ class "pokemon-search", onSubmit Submitted ]
     [ input
       [ type_ "search"
@@ -137,3 +171,8 @@ viewLoading =
 viewFailure : List (Html Signal)
 viewFailure =
   [ div [ class "alert" ] [ text "Impossible de charger la liste de Pokémon.", br [][], text "Essayez plus tard." ] ]
+
+
+viewReady : List (Html Signal)
+viewReady =
+  [ div [ class "alert" ] [ text "Recherche d'un Pokémon aléatoire..." ] ]
