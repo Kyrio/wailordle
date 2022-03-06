@@ -7,9 +7,9 @@ import Json.Decode as J
 type alias GameData =
   { pokemonList : PokemonList
   , pokemonByName : PokemonByName
-  , pokemonFilteredList : List Pokemon
+  , pokemonPool : List Pokemon
   , chosen : Pokemon
-  , search : String
+  , searchResults : PokemonByName
   }
 
 
@@ -18,7 +18,7 @@ type alias PokemonList =
 
 
 type alias PokemonByName =
-  Dict String (List Int)
+  List (String, List Int)
 
 
 type alias Pokemon =
@@ -72,4 +72,4 @@ pokemonSpeciesDecoder =
 
 pokemonByNameDecoder : J.Decoder PokemonByName
 pokemonByNameDecoder =
-  J.dict (J.list J.int)
+  J.keyValuePairs (J.list J.int)
