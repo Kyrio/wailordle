@@ -1,14 +1,16 @@
 module Main exposing (..)
 
 import Browser
+import Browser.Dom
 import Debug exposing (log)
 import Dict exposing (Dict)
-import Html exposing (Html, div, form, input, text, button, datalist, option, br, span)
-import Html.Attributes exposing (class, id, type_, size, placeholder, spellcheck, autofocus, list, value)
-import Html.Events exposing (onInput, onSubmit)
+import Html exposing (Html, div, form, input, text, button, datalist, option, br, span, h1, h2)
+import Html.Attributes exposing (class, id, type_, size, placeholder, spellcheck, list, value)
+import Html.Events exposing (onInput)
 import Http
 import Random
 import Random.List
+import Task
 import Types exposing (..)
 
 
@@ -26,6 +28,7 @@ type Signal
   | ChosePokemon (Maybe Pokemon, List Pokemon)
   | Typed String
   | Submitted
+  | NoOp
 
 
 main =
@@ -91,7 +94,8 @@ update signal model =
                 , chosen = pokemon
                 , searchResults = []
                 }
-              , Cmd.none)
+              , Task.attempt (\_ -> NoOp) (Browser.Dom.focus "search-bar")
+              )
             Nothing ->
               (model, Cmd.none)
         _ ->
@@ -117,6 +121,9 @@ update signal model =
           (Chosen gameData, Cmd.none)
         _ ->
           (model, Cmd.none)
+
+    NoOp ->
+      (model, Cmd.none)
 
 
 subscriptions : Model -> Sub Signal
@@ -153,21 +160,19 @@ viewGame gameData =
           )
       )
     ]
-  , div [ class "solution" ]
-      [ span [ class ("pokesprite pokemon " ++ gameData.chosen.identifier) ] []
-      , text gameData.chosen.species.names.fr
-      ]
-  , form [ class "pokemon-search", onSubmit Submitted ]
+  , form [ class "pokemon-search" ]
     [ input
       [ type_ "search"
+      , id "search-bar"
       , size 30
       , placeholder "Entrez le nom d'un Pokémon..."
       , spellcheck False
-      , autofocus True
       , onInput Typed
-      ] []
-    , div [ class "search" ] []
-    , div [ class "results" ] (List.map (mapSearchResult gameData.pokemonList) gameData.searchResults)
+      ]
+      []
+    , div [ class "search-icon" ] []
+    , div [ if List.isEmpty gameData.searchResults then (class "results empty") else (class "results") ]
+        (List.map (mapSearchResult gameData.pokemonList) gameData.searchResults)
     ]
   ]
 
@@ -189,7 +194,7 @@ viewReady =
 
 filterByName : String -> (String, List Int) -> Bool
 filterByName search (name, list) =
-  String.contains (String.toLower search) (String.toLower name)
+  String.startsWith (String.toLower search) (String.toLower name)
 
 
 mapSearchResult : PokemonList -> (String, List Int) -> Html Signal
@@ -201,14 +206,24 @@ mapVariant : PokemonList -> Int -> Html Signal
 mapVariant pokemonList variant =
   let
     key = String.fromInt variant
+    maybePokemon = Dict.get key pokemonList
     identifier =
-      case Dict.get key pokemonList of
+      case maybePokemon of
         Just pokemon ->
           pokemon.identifier
         Nothing ->
           "missingno"
+    frenchName =
+      case maybePokemon of
+        Just pokemon ->
+          pokemon.species.names.fr
+        Nothing ->
+          "Missingno"
   in
     div [ class "variant" ]
-      [ span [ class ("pokesprite pokemon " ++ identifier) ] []
-      , text identifier
+      [ div [ class "variant-name" ]
+        [ h1 [] [ text frenchName ]
+        , h2 [] [ text identifier ]
+        ]
+      , div [ class ("pokesprite pokemon " ++ identifier) ] []
       ]

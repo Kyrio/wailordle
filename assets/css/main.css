@@ -56,7 +56,6 @@ header {
 
 .pokesprite {
   margin-top: -16px;
-  margin-left: -24px;
 }
 
 .app {
@@ -138,11 +137,6 @@ header {
   background-image: url('../images/guesses/1f53d.svg');
 }
 
-.solution {
-  display: flex;
-  align-items: center;
-}
-
 form.pokemon-search {
   position: relative;
 }
@@ -157,7 +151,7 @@ input[type=search] {
   font-weight: 400;
 }
 
-.search {
+.search-icon {
   width: 1rem;
   height: 1rem;
   position: absolute;
@@ -165,3 +159,52 @@ input[type=search] {
   right: .5rem;
   background: url('../images/1f50d.svg');
 }
+
+.results {
+  position: absolute;
+  z-index: 10;
+  bottom: 2.5rem;
+  width: 100%;
+  max-height: 18rem;
+  border: 1px solid #dedede;
+  border-radius: 5px;
+  background-color: #ffffff;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.results.empty {
+  display: none;
+}
+
+.variant {
+  display: flex;
+  align-items: end;
+  padding: .5rem 0;
+  cursor: pointer;
+}
+
+.variant:hover {
+  background-color: #dedede;
+}
+
+.variant-name {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding-left: .5rem;
+}
+
+.variant-name h1 {
+  font-size: 14px;
+  font-weight: 400;
+  color: #222222;
+}
+
+.variant-name h2 {
+  font-size: 10px;
+  font-weight: 400;
+  color: #505050;
+}
+s
