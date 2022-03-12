@@ -1,17 +1,19 @@
 module Main exposing (..)
 
+import Array
 import Browser
 import Browser.Dom
 import Debug exposing (log)
-import Dict exposing (Dict)
-import Html exposing (Html, div, form, input, text, button, datalist, option, br, span, h1, h2)
-import Html.Attributes exposing (class, id, type_, size, placeholder, spellcheck, list, value)
-import Html.Events exposing (onInput)
+import Dict
+import Html exposing (Html, div, form, input, text, br, span, h1, h2, a)
+import Html.Attributes exposing (class, id, type_, size, placeholder, spellcheck, value, href, style)
+import Html.Events exposing (onInput, onClick)
 import Http
 import Random
 import Random.List
 import Task
-import Types exposing (..)
+
+import Game exposing (..)
 
 
 type Model
@@ -27,7 +29,7 @@ type Signal
   | ReceivedPokemonByName (Result Http.Error PokemonByName)
   | ChosePokemon (Maybe Pokemon, List Pokemon)
   | Typed String
-  | Submitted
+  | Submitted Pokemon
   | NoOp
 
 
@@ -92,7 +94,9 @@ update signal model =
                 , pokemonByName = byName
                 , pokemonPool = rest
                 , chosen = pokemon
+                , search = ""
                 , searchResults = []
+                , guess = Thinking
                 }
               , Task.attempt (\_ -> NoOp) (Browser.Dom.focus "search-bar")
               )
@@ -111,14 +115,25 @@ update signal model =
               else
                 List.filter (filterByName search) gameData.pokemonByName
           in
-            (Chosen { gameData | searchResults = results }, Cmd.none)
+            (Chosen { gameData | search = search, searchResults = results }, Cmd.none)
         _ ->
           (model, Cmd.none)
 
-    Submitted ->
+    Submitted pokemon ->
       case model of
         Chosen gameData ->
-          (Chosen gameData, Cmd.none)
+          ( Chosen
+              { gameData
+              | guess =
+                  if pokemon.identifier == gameData.chosen.identifier then
+                    GuessedRight
+                  else
+                    GuessedWrong pokemon
+              , search = ""
+              , searchResults = []
+              }
+          , Task.attempt (\_ -> NoOp) (Browser.Dom.focus "search-bar")
+          )
         _ ->
           (model, Cmd.none)
 
@@ -151,14 +166,7 @@ view model =
 viewGame : GameData -> List (Html Signal)
 viewGame gameData =
   [ div [ class "guesses" ]
-    [ div [ class "guess" ]
-      ( List.repeat 4
-          ( div [ class "guessline" ]
-            [ div [ class "ribbon" ] []
-            , div [ class "check" ] []
-            ]
-          )
-      )
+    [ div [ class "guess" ] (viewGuess gameData.chosen gameData.guess)
     ]
   , form [ class "pokemon-search" ]
     [ input
@@ -168,6 +176,7 @@ viewGame gameData =
       , placeholder "Entrez le nom d'un Pokémon..."
       , spellcheck False
       , onInput Typed
+      , value gameData.search
       ]
       []
     , div [ class "search-icon" ] []
@@ -175,6 +184,89 @@ viewGame gameData =
         (List.map (mapSearchResult gameData.pokemonList) gameData.searchResults)
     ]
   ]
+
+
+viewGuess : Pokemon -> Guess -> List (Html Signal)
+viewGuess chosen guess =
+  case guess of
+    Thinking ->
+      List.repeat 4
+        ( div [ class "guessline" ]
+          [ div [ class "ribbon" ] []
+          , div [ class "check" ] []
+          ]
+        )
+
+    GuessedRight ->
+      viewComparison chosen chosen
+
+    GuessedWrong guessed ->
+      viewComparison chosen guessed
+
+
+viewComparison : Pokemon -> Pokemon -> List (Html Signal)
+viewComparison chosen guessed =
+  let
+    chosenTypeA = Maybe.withDefault "none" (Array.get 0 chosen.types)
+    chosenTypeB = Maybe.withDefault "none" (Array.get 1 chosen.types)
+    guessedTypeA = Maybe.withDefault "none" (Array.get 0 guessed.types)
+    guessedTypeB = Maybe.withDefault "none" (Array.get 1 guessed.types)
+
+    checkTypeA =
+      if guessedTypeA == chosenTypeA then
+        div [ class "check correct" ] []
+      else if guessedTypeA == chosenTypeB then
+        div [ class "check swap" ] []
+      else
+        div [ class "check wrong" ] []
+
+    checkTypeB =
+      if guessedTypeB == chosenTypeB then
+        div [ class "check correct" ] []
+      else if guessedTypeB == chosenTypeA then
+        div [ class "check swap" ] []
+      else
+        div [ class "check wrong" ] []
+
+    heightTest =
+      if guessed.height < chosen.height then
+        [ div [ class "ribbon too-short" ] []
+        , div [ class "check too-low" ] []
+        ]
+      else if guessed.height > chosen.height then
+        [ div [ class "ribbon too-tall" ] []
+        , div [ class "check too-high" ] []
+        ]
+      else
+        [ div [ class "ribbon correct-height" ] []
+        , div [ class "check correct" ] []
+        ]
+
+    weightTest =
+      if guessed.weight < chosen.weight then
+        [ div [ class "ribbon too-light" ] []
+        , div [ class "check too-low" ] []
+        ]
+      else if guessed.weight > chosen.weight then
+        [ div [ class "ribbon too-heavy" ] []
+        , div [ class "check too-high" ] []
+        ]
+      else
+        [ div [ class "ribbon correct-weight" ] []
+        , div [ class "check correct" ] []
+        ]
+  in
+    [ div [ class "guessline" ]
+        [ div [ class "ribbon", style "background-image" ("url(assets/images/types/" ++ guessedTypeA ++ ".png)") ] []
+        , checkTypeA
+        ]
+    , div [ class "guessline" ]
+        [ div [ class "ribbon", style "background-image" ("url(assets/images/types/" ++ guessedTypeB ++ ".png)") ] []
+        , checkTypeB
+        ]
+    , div [ class "guessline" ] heightTest
+    , div [ class "guessline" ] weightTest
+    ]
 
 
 viewLoading : List (Html Signal)
@@ -192,11 +284,6 @@ viewReady =
   [ div [ class "alert" ] [ text "Recherche d'un Pokémon aléatoire..." ] ]
 
 
-filterByName : String -> (String, List Int) -> Bool
-filterByName search (name, list) =
-  String.startsWith (String.toLower search) (String.toLower name)
-
-
 mapSearchResult : PokemonList -> (String, List Int) -> Html Signal
 mapSearchResult pokemonList (name, list) =
   div [ class "species" ] (List.map (mapVariant pokemonList) list)
@@ -206,24 +293,20 @@ mapVariant : PokemonList -> Int -> Html Signal
 mapVariant pokemonList variant =
   let
     key = String.fromInt variant
-    maybePokemon = Dict.get key pokemonList
-    identifier =
-      case maybePokemon of
-        Just pokemon ->
-          pokemon.identifier
-        Nothing ->
-          "missingno"
-    frenchName =
-      case maybePokemon of
-        Just pokemon ->
-          pokemon.species.names.fr
-        Nothing ->
-          "Missingno"
   in
-    div [ class "variant" ]
-      [ div [ class "variant-name" ]
-        [ h1 [] [ text frenchName ]
-        , h2 [] [ text identifier ]
-        ]
-      , div [ class ("pokesprite pokemon " ++ identifier) ] []
-      ]
+    case Dict.get key pokemonList of
+      Nothing ->
+        div [ class "alert" ] [ text "Missingno" ]
+      Just pokemon ->
+        a [ href "#", class "variant", onClick (Submitted pokemon) ]
+          [ div [ class "variant-name" ]
+            [ h1 [] [ text pokemon.species.names.fr ]
+            , h2 [] [ text pokemon.identifier ]
+            ]
+          , div [ class ("pokesprite pokemon " ++ pokemon.identifier) ] []
+          ]
+
+
+filterByName : String -> (String, List Int) -> Bool
+filterByName search (name, list) =
+  String.startsWith (String.toLower search) (String.toLower name)

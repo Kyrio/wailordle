@@ -1,15 +1,15 @@
 @font-face {
-  font-family: 'Open Sans';
+  font-family: 'Cabin';
   font-style: normal;
   font-weight: 400;
-  src: url('../fonts/OpenSans-Regular.ttf') format('truetype');
+  src: url('../fonts/Cabin-Regular.ttf') format('truetype');
 }
 
 @font-face {
-  font-family: 'Open Sans Condensed';
+  font-family: 'Cabin Condensed';
   font-style: normal;
   font-weight: 700;
-  src: url('../fonts/OpenSans_Condensed-Bold.ttf') format('truetype');
+  src: url('../fonts/CabinCondensed-Bold.ttf') format('truetype');
 }
 
 * {
@@ -33,7 +33,7 @@ header {
 }
 
 .title-letter {
-  font-family: 'Open Sans Condensed';
+  font-family: 'Cabin Condensed';
   font-weight: 700;
   font-size: 20px;
   color: #000000;
@@ -64,7 +64,7 @@ header {
   display: flex;
   flex-direction: column;
   align-items: center;
-  font-family: 'Open Sans';
+  font-family: 'Cabin';
   font-weight: 400;
 }
 
@@ -82,7 +82,7 @@ header {
 .guessline {
   display: flex;
   align-items: center;
-  margin-bottom: .5rem;
+  margin-bottom: .75rem;
 }
 
 .ribbon {
@@ -102,12 +102,20 @@ header {
   background-image: url('../images/guesses/too_tall.png');
 }
 
+.ribbon.correct-height {
+  background-image: url('../images/guesses/correct_height.png');
+}
+
 .ribbon.too-light {
   background-image: url('../images/guesses/too_light.png');
 }
 
 .ribbon.too-heavy {
   background-image: url('../images/guesses/too_heavy.png');
+}
+
+.ribbon.correct-weight {
+  background-image: url('../images/guesses/correct_weight.png');
 }
 
 .check {
@@ -147,7 +155,7 @@ input[type=search] {
   padding-right: 2rem;
   border: 1px solid #dedede;
   border-radius: 5px;
-  font-family: 'Open Sans';
+  font-family: 'Cabin';
   font-weight: 400;
 }
 
@@ -183,6 +191,7 @@ input[type=search] {
   align-items: end;
   padding: .5rem 0;
   cursor: pointer;
+  text-decoration: none;
 }
 
 .variant:hover {
@@ -197,14 +206,13 @@ input[type=search] {
 }
 
 .variant-name h1 {
-  font-size: 14px;
+  font-size: 0.95rem;
   font-weight: 400;
   color: #222222;
 }
 
 .variant-name h2 {
-  font-size: 10px;
+  font-size: 0.7rem;
   font-weight: 400;
   color: #505050;
 }
-s

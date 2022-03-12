@@ -1,5 +1,6 @@
-module Types exposing (GameData, PokemonList, PokemonByName, Pokemon, PokemonSpecies, PokemonNames, pokemonListDecoder, pokemonByNameDecoder)
+module Game exposing (..)
 
+import Array exposing (Array)
 import Dict exposing (Dict)
 import Json.Decode as J
 
@@ -9,7 +10,9 @@ type alias GameData =
   , pokemonByName : PokemonByName
   , pokemonPool : List Pokemon
   , chosen : Pokemon
+  , search : String
   , searchResults : PokemonByName
+  , guess : Guess
   }
 
 
@@ -27,7 +30,7 @@ type alias Pokemon =
   , species : PokemonSpecies
   , height : Int
   , weight : Int
-  , types : List String
+  , types : Array String
   }
 
 
@@ -44,6 +47,12 @@ type alias PokemonNames =
   }
 
 
+type Guess
+  = Thinking
+  | GuessedRight
+  | GuessedWrong Pokemon
+
+
 pokemonListDecoder : J.Decoder PokemonList
 pokemonListDecoder =
   J.dict
@@ -53,7 +62,7 @@ pokemonListDecoder =
         (J.field "species" pokemonSpeciesDecoder)
         (J.field "height_dm" J.int)
         (J.field "weight_hg" J.int)
-        (J.field "types" (J.list J.string))
+        (J.field "types" (J.array J.string))
     )
 
 
