@@ -73,7 +73,6 @@ update signal model =
           case model of
             LoadingPokemonByName list ->
               let
-                -- Exclude Crown Tundra Pokemon
                 filteredList = Dict.values list
               in
                 ( Ready (list, byName, filteredList)

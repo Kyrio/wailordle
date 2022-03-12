@@ -763,7 +763,7 @@
 .pokesprite.darumaka-galar { background-position: -1960px -1334px }
 .pokesprite.darmanitan { background-position: -2030px -1334px }
 .pokesprite.darmanitan-standard { background-position: -2030px -1334px }
-.pokesprite.darmanitan-galar { background-position: -2100px -1334px }
+.pokesprite.darmanitan-galar-standard { background-position: -2100px -1334px }
 .pokesprite.darmanitan-galar-zen { background-position: -0px -1392px }
 .pokesprite.darmanitan-zen { background-position: -70px -1392px }
 .pokesprite.maractus { background-position: -140px -1392px }
@@ -1277,7 +1277,7 @@
 .pokesprite.toxel { background-position: -1050px -2146px }
 .pokesprite.toxtricity { background-position: -1120px -2146px }
 .pokesprite.toxtricity-amped { background-position: -1120px -2146px }
-.pokesprite.toxtricity-gmax { background-position: -1190px -2146px }
+.pokesprite.toxtricity-amped-gmax { background-position: -1190px -2146px }
 .pokesprite.toxtricity-low-key-gmax { background-position: -1190px -2146px }
 .pokesprite.toxtricity-low-key { background-position: -1260px -2146px }
 .pokesprite.sizzlipede { background-position: -1330px -2146px }
@@ -1410,7 +1410,8 @@
 .pokesprite.eternatus { background-position: -1260px -2378px }
 .pokesprite.eternatus-eternamax { background-position: -1330px -2378px }
 .pokesprite.kubfu { background-position: -1400px -2378px }
-.pokesprite.urshifu { background-position: -1470px -2378px }
+.pokesprite.urshifu-single-strike { background-position: -1470px -2378px }
+.pokesprite.urshifu-rapid-strike { background-position: -1470px -2378px }
 .pokesprite.urshifu-gmax { background-position: -1540px -2378px }
 .pokesprite.urshifu-single-strike-gmax { background-position: -1540px -2378px }
 .pokesprite.urshifu-rapid-strike-gmax { background-position: -1610px -2378px }
