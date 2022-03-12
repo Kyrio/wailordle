@@ -189,12 +189,24 @@ viewGuess : Pokemon -> Guess -> List (Html Signal)
 viewGuess chosen guess =
   case guess of
     Thinking ->
-      List.repeat 4
-        ( div [ class "guessline" ]
-          [ div [ class "ribbon" ] []
-          , div [ class "check" ] []
-          ]
+      List.append
+        ( List.repeat 4
+          ( div [ class "guessline" ]
+            [ div [ class "ribbon" ] []
+            , div [ class "check" ] []
+            ]
+          )
         )
+        [ div [ class "guess-footer" ]
+          [ div [ class "guess-pokemon" ]
+              [ div [ class "pokesprite pokemon unknown" ] []
+              ]
+          , div [ class "guess-name" ]
+              [ h1 [] [ text "Non choisi" ]
+              , h2 [] [ text "Faites un essai !" ]
+              ]
+          ]
+        ]
 
     GuessedRight ->
       viewComparison chosen chosen
@@ -265,6 +277,15 @@ viewComparison chosen guessed =
         ]
     , div [ class "guessline" ] heightTest
     , div [ class "guessline" ] weightTest
+    , div [ class "guess-footer" ]
+        [ div [ class "guess-pokemon" ]
+            [ div [ class ("pokesprite pokemon " ++ guessed.identifier) ] []
+            ]
+        , div [ class "guess-name" ]
+            [ h1 [] [ text guessed.species.names.fr ]
+            , h2 [] [ text guessed.identifier ]
+            ]
+        ]
     ]
 
 

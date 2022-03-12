@@ -54,10 +54,6 @@ header {
   image-rendering: pixelated;
 }
 
-.pokesprite {
-  margin-top: -16px;
-}
-
 .app {
   flex: 1;
   padding: 1rem;
@@ -70,13 +66,15 @@ header {
 
 .guesses {
   flex: 1;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
 }
 
 .guess {
-  margin: 0 1rem 0 1rem;
+  border: 1px solid #dedede;
+  border-radius: 5px;
+  padding: 1rem 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
 }
 
 .guessline {
@@ -145,6 +143,17 @@ header {
   background-image: url('../images/guesses/1f53d.svg');
 }
 
+.guess-footer {
+  display: flex;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+.guess-pokemon {
+  border: 1px solid #dedede;
+  border-radius: 5px;
+}
+
 form.pokemon-search {
   position: relative;
 }
@@ -198,20 +207,24 @@ input[type=search] {
   background-color: #dedede;
 }
 
-.variant-name {
+.variant .pokesprite {
+  margin-top: -16px;
+}
+
+.variant-name, .guess-name {
   display: flex;
   flex-direction: column;
   flex: 1;
   padding-left: .5rem;
 }
 
-.variant-name h1 {
+.variant-name h1, .guess-name h1 {
   font-size: 0.95rem;
   font-weight: 400;
   color: #222222;
 }
 
-.variant-name h2 {
+.variant-name h2, .guess-name h2 {
   font-size: 0.7rem;
   font-weight: 400;
   color: #505050;
