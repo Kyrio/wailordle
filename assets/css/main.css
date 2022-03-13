@@ -66,11 +66,15 @@ header {
 
 .guesses {
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .guess {
   border: 1px solid #dedede;
   border-radius: 5px;
+  margin-bottom: .5rem;
   padding: 1rem 2rem;
   display: flex;
   flex-direction: column;
@@ -154,6 +158,32 @@ header {
   border-radius: 5px;
 }
 
+.empty-pokemon {
+  width: 68px;
+  height: 56px;
+  background: no-repeat bottom url('../images/poke.png');
+}
+
+.backlog {
+  display: flex;
+  flex-direction: row-reverse;
+}
+
+.backlog-ball {
+  width: 32px;
+  height: 32px;
+  border: 1px solid #dedede;
+  border-radius: 50%;
+  margin: 0 .1rem;
+  cursor: pointer;
+  background-image: url('../images/premier.png');
+  background-position: center;
+}
+
+.backlog-ball.active {
+  background-image: url('../images/poke.png');
+}
+
 form.pokemon-search {
   position: relative;
 }
@@ -191,8 +221,8 @@ input[type=search] {
   flex-direction: column;
 }
 
-.results.empty {
-  display: none;
+.results:empty {
+  border: 0;
 }
 
 .variant {
@@ -200,7 +230,6 @@ input[type=search] {
   align-items: end;
   padding: .5rem 0;
   cursor: pointer;
-  text-decoration: none;
 }
 
 .variant:hover {

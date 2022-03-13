@@ -12,7 +12,8 @@ type alias GameData =
   , chosen : Pokemon
   , search : String
   , searchResults : PokemonByName
-  , guess : Guess
+  , guesses : List Pokemon
+  , activeGuess : Maybe Pokemon
   }
 
 
@@ -45,12 +46,6 @@ type alias PokemonNames =
   { fr : String
   , en : String
   }
-
-
-type Guess
-  = Thinking
-  | GuessedRight
-  | GuessedWrong Pokemon
 
 
 pokemonListDecoder : J.Decoder PokemonList

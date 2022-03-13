@@ -3,7 +3,6 @@ module Main exposing (..)
 import Array
 import Browser
 import Browser.Dom
-import Debug exposing (log)
 import Dict
 import Html exposing (Html, div, form, input, text, br, span, h1, h2, a)
 import Html.Attributes exposing (class, id, type_, size, placeholder, spellcheck, value, href, style)
@@ -30,6 +29,7 @@ type Signal
   | ChosePokemon (Maybe Pokemon, List Pokemon)
   | Typed String
   | Submitted Pokemon
+  | EnteredBacklog Pokemon
   | NoOp
 
 
@@ -95,7 +95,8 @@ update signal model =
                 , chosen = pokemon
                 , search = ""
                 , searchResults = []
-                , guess = Thinking
+                , guesses = []
+                , activeGuess = Nothing
                 }
               , Task.attempt (\_ -> NoOp) (Browser.Dom.focus "search-bar")
               )
@@ -123,15 +124,21 @@ update signal model =
         Chosen gameData ->
           ( Chosen
               { gameData
-              | guess =
-                  if pokemon.identifier == gameData.chosen.identifier then
-                    GuessedRight
-                  else
-                    GuessedWrong pokemon
+              | guesses = pokemon :: gameData.guesses
+              , activeGuess = Just pokemon
               , search = ""
               , searchResults = []
               }
           , Task.attempt (\_ -> NoOp) (Browser.Dom.focus "search-bar")
+          )
+        _ ->
+          (model, Cmd.none)
+
+    EnteredBacklog guess ->
+      case model of
+        Chosen gameData ->
+          ( Chosen { gameData | activeGuess = Just guess }
+          , Cmd.none
           )
         _ ->
           (model, Cmd.none)
@@ -165,8 +172,12 @@ view model =
 viewGame : GameData -> List (Html Signal)
 viewGame gameData =
   [ div [ class "guesses" ]
-    [ div [ class "guess" ] (viewGuess gameData.chosen gameData.guess)
-    ]
+      ( case gameData.activeGuess of
+          Nothing ->
+            [ viewEmptyGuess ]
+          Just active ->
+            [ viewGuess gameData.chosen active, viewBacklog active gameData.guesses ]
+      )
   , form [ class "pokemon-search" ]
     [ input
       [ type_ "search"
@@ -179,44 +190,46 @@ viewGame gameData =
       ]
       []
     , div [ class "search-icon" ] []
-    , div [ if List.isEmpty gameData.searchResults then (class "results empty") else (class "results") ]
+    , div [ class "results" ]
         (List.map (mapSearchResult gameData.pokemonList) gameData.searchResults)
     ]
   ]
 
 
-viewGuess : Pokemon -> Guess -> List (Html Signal)
-viewGuess chosen guess =
-  case guess of
-    Thinking ->
-      List.append
-        ( List.repeat 4
-          ( div [ class "guessline" ]
-            [ div [ class "ribbon" ] []
-            , div [ class "check" ] []
-            ]
-          )
-        )
-        [ div [ class "guess-footer" ]
-          [ div [ class "guess-pokemon" ]
-              [ div [ class "pokesprite pokemon unknown" ] []
-              ]
-          , div [ class "guess-name" ]
-              [ h1 [] [ text "Non choisi" ]
-              , h2 [] [ text "Faites un essai !" ]
-              ]
+viewBacklog : Pokemon -> List Pokemon -> Html Signal
+viewBacklog activeGuess guesses =
+  div [ class "backlog" ] (List.map (viewBacklogBall activeGuess) guesses)
+
+
+viewBacklogBall : Pokemon -> Pokemon -> Html Signal
+viewBacklogBall active guess =
+  if guess.identifier == active.identifier then
+    div [ class "backlog-ball active" ] []
+  else
+    div [ class "backlog-ball", onClick (EnteredBacklog guess) ] []
+
+
+viewEmptyGuess : Html Signal
+viewEmptyGuess =
+  div [ class "guess" ]
+    [ div [ class "guessline" ] [ div [ class "ribbon" ] [], div [ class "check" ] [] ]
+    , div [ class "guessline" ] [ div [ class "ribbon" ] [], div [ class "check" ] [] ]
+    , div [ class "guessline" ] [ div [ class "ribbon" ] [], div [ class "check" ] [] ]
+    , div [ class "guessline" ] [ div [ class "ribbon" ] [], div [ class "check" ] [] ]
+    , div [ class "guess-footer" ]
+      [ div [ class "guess-pokemon" ]
+          [ div [ class "empty-pokemon" ] []
           ]
-        ]
+      , div [ class "guess-name" ]
+          [ h1 [] [ text "Non choisi" ]
+          , h2 [] [ text "Faites un essai !" ]
+          ]
+      ]
+    ]
 
-    GuessedRight ->
-      viewComparison chosen chosen
 
-    GuessedWrong guessed ->
-      viewComparison chosen guessed
-
-
-viewComparison : Pokemon -> Pokemon -> List (Html Signal)
-viewComparison chosen guessed =
+viewGuess : Pokemon -> Pokemon -> Html Signal
+viewGuess chosen guessed =
   let
     chosenTypeA = Maybe.withDefault "none" (Array.get 0 chosen.types)
     chosenTypeB = Maybe.withDefault "none" (Array.get 1 chosen.types)
@@ -267,26 +280,27 @@ viewComparison chosen guessed =
         , div [ class "check correct" ] []
         ]
   in
-    [ div [ class "guessline" ]
-        [ div [ class "ribbon", style "background-image" ("url(assets/images/types/" ++ guessedTypeA ++ ".png)") ] []
-        , checkTypeA
-        ]
-    , div [ class "guessline" ]
-        [ div [ class "ribbon", style "background-image" ("url(assets/images/types/" ++ guessedTypeB ++ ".png)") ] []
-        , checkTypeB
-        ]
-    , div [ class "guessline" ] heightTest
-    , div [ class "guessline" ] weightTest
-    , div [ class "guess-footer" ]
-        [ div [ class "guess-pokemon" ]
-            [ div [ class ("pokesprite pokemon " ++ guessed.identifier) ] []
-            ]
-        , div [ class "guess-name" ]
-            [ h1 [] [ text guessed.species.names.fr ]
-            , h2 [] [ text guessed.identifier ]
-            ]
-        ]
-    ]
+    div [ class "guess" ]
+      [ div [ class "guessline" ]
+          [ div [ class "ribbon", style "background-image" ("url(assets/images/types/" ++ guessedTypeA ++ ".png)") ] []
+          , checkTypeA
+          ]
+      , div [ class "guessline" ]
+          [ div [ class "ribbon", style "background-image" ("url(assets/images/types/" ++ guessedTypeB ++ ".png)") ] []
+          , checkTypeB
+          ]
+      , div [ class "guessline" ] heightTest
+      , div [ class "guessline" ] weightTest
+      , div [ class "guess-footer" ]
+          [ div [ class "guess-pokemon" ]
+              [ div [ class ("pokesprite pokemon " ++ guessed.identifier) ] []
+              ]
+          , div [ class "guess-name" ]
+              [ h1 [] [ text guessed.species.names.fr ]
+              , h2 [] [ text guessed.identifier ]
+              ]
+          ]
+      ]
 
 
 viewLoading : List (Html Signal)
@@ -318,7 +332,7 @@ mapVariant pokemonList variant =
       Nothing ->
         div [ class "alert" ] [ text "Missingno" ]
       Just pokemon ->
-        a [ href "#", class "variant", onClick (Submitted pokemon) ]
+        div [ class "variant", onClick (Submitted pokemon) ]
           [ div [ class "variant-name" ]
             [ h1 [] [ text pokemon.species.names.fr ]
             , h2 [] [ text pokemon.identifier ]
