@@ -26,10 +26,15 @@ jobs:
       # Runs a set of commands using the runners shell
       - name: Install Elm
         run: |
+          mkdir bin
+          cd bin
           curl -L -o elm.gz https://github.com/elm/compiler/releases/download/0.19.1/binary-for-linux-64-bit.gz
           gunzip elm.gz
           chmod +x elm
-          ls
 
       - name: Build project
-        run: elm make $GITHUB_WORKSPACE/src/Main.elm --optimize --output=$GITHUB_WORKSPACE/scripts/main.js
+        run: |
+          mkdir $GITHUB_WORKSPACE/dist
+          cp -r $GITHUB_WORKSPACE/assets $GITHUB_WORKSPACE/dist
+          cp $GITHUB_WORKSPACE/index.html $GITHUB_WORKSPACE/dist
+          ./elm make $GITHUB_WORKSPACE/src/Main.elm --optimize --output=$GITHUB_WORKSPACE/dist/scripts/main.js
