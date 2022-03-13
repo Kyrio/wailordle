@@ -171,12 +171,17 @@ view model =
 
 viewGame : GameData -> List (Html Signal)
 viewGame gameData =
-  [ div [ class "guesses" ]
+  [ div [ class "prompt" ]
+      [ text "Je pense à un Pokémon de la "
+      , span [ class "generation" ] [ text ("Génération " ++ String.fromInt gameData.chosen.species.generation) ]
+      , text "."
+      ]
+  , div [ class "guesses" ]
       ( case gameData.activeGuess of
           Nothing ->
             [ viewEmptyGuess ]
           Just active ->
-            [ viewGuess gameData.chosen active, viewBacklog active gameData.guesses ]
+            [ viewGuess gameData.chosen active, viewBacklog gameData.chosen active gameData.guesses ]
       )
   , form [ class "pokemon-search" ]
     [ input
@@ -196,17 +201,19 @@ viewGame gameData =
   ]
 
 
-viewBacklog : Pokemon -> List Pokemon -> Html Signal
-viewBacklog activeGuess guesses =
-  div [ class "backlog" ] (List.map (viewBacklogBall activeGuess) guesses)
+viewBacklog : Pokemon -> Pokemon -> List Pokemon -> Html Signal
+viewBacklog chosen activeGuess guesses =
+  div [ class "backlog" ] (List.map (viewBacklogBall chosen activeGuess) guesses)
 
 
-viewBacklogBall : Pokemon -> Pokemon -> Html Signal
-viewBacklogBall active guess =
-  if guess.identifier == active.identifier then
-    div [ class "backlog-ball active" ] []
-  else
-    div [ class "backlog-ball", onClick (EnteredBacklog guess) ] []
+viewBacklogBall : Pokemon -> Pokemon -> Pokemon -> Html Signal
+viewBacklogBall chosen active guess =
+  let
+    c1 = "backlog-ball"
+    c2 = if guess.identifier == active.identifier then c1 ++ " active" else c1
+    c3 = if guess.identifier == chosen.identifier then c2 ++ " victory" else c2
+  in
+    div [ class c3, onClick (EnteredBacklog guess) ] []
 
 
 viewEmptyGuess : Html Signal
@@ -280,7 +287,7 @@ viewGuess chosen guessed =
         , div [ class "check correct" ] []
         ]
   in
-    div [ class "guess" ]
+    div [ if guessed.identifier == chosen.identifier then class "guess victory" else class "guess" ]
       [ div [ class "guessline" ]
           [ div [ class "ribbon", style "background-image" ("url(assets/images/types/" ++ guessedTypeA ++ ".png)") ] []
           , checkTypeA
@@ -299,6 +306,10 @@ viewGuess chosen guessed =
               [ h1 [] [ text guessed.species.names.fr ]
               , h2 [] [ text guessed.identifier ]
               ]
+          , if guessed.identifier == chosen.identifier then
+              div [ class "status" ] [ text "Victoire !" ]
+            else
+              div [ class "status" ] []
           ]
       ]
 

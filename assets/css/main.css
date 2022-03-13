@@ -6,6 +6,20 @@
 }
 
 @font-face {
+  font-family: 'Cabin';
+  font-style: italic;
+  font-weight: 400;
+  src: url('../fonts/Cabin-Italic.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Cabin';
+  font-style: italic;
+  font-weight: 700;
+  src: url('../fonts/Cabin-BoldItalic.ttf') format('truetype');
+}
+
+@font-face {
   font-family: 'Cabin Condensed';
   font-style: normal;
   font-weight: 700;
@@ -64,6 +78,17 @@ header {
   font-weight: 400;
 }
 
+.prompt {
+  margin-bottom: 1rem;
+  font-size: 0.95rem;
+  font-style: italic;
+}
+
+.generation {
+  font-weight: 700;
+  color: #5e7efa;
+}
+
 .guesses {
   flex: 1;
   display: flex;
@@ -79,6 +104,10 @@ header {
   display: flex;
   flex-direction: column;
   align-items: stretch;
+}
+
+.guess.victory {
+  border-color: #77b255;
 }
 
 .guessline {
@@ -158,10 +187,25 @@ header {
   border-radius: 5px;
 }
 
+.victory .guess-pokemon {
+  border-color: #77b255;
+}
+
 .empty-pokemon {
   width: 68px;
   height: 56px;
   background: no-repeat bottom url('../images/poke.png');
+}
+
+.status {
+  font-family: 'Cabin Condensed';
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #505050;
+}
+
+.victory .status {
+  color: #77b255;
 }
 
 .backlog {
@@ -182,6 +226,10 @@ header {
 
 .backlog-ball.active {
   background-image: url('../images/poke.png');
+}
+
+.backlog-ball.victory {
+  border-color: #77b255;
 }
 
 form.pokemon-search {
