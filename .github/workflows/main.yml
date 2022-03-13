@@ -34,7 +34,7 @@ jobs:
 
       - name: Build project
         run: |
-          mkdir $GITHUB_WORKSPACE/dist
-          cp -r $GITHUB_WORKSPACE/assets $GITHUB_WORKSPACE/dist
-          cp $GITHUB_WORKSPACE/index.html $GITHUB_WORKSPACE/dist
-          ./elm make $GITHUB_WORKSPACE/src/Main.elm --optimize --output=$GITHUB_WORKSPACE/dist/scripts/main.js
+          mkdir dist
+          cp -r assets dist
+          cp index.html dist
+          ./bin/elm make src/Main.elm --optimize --output=dist/scripts/main.js
