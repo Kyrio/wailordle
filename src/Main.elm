@@ -46,7 +46,7 @@ init : () -> (Model, Cmd Signal)
 init _ =
   ( LoadingPokemonList
   , Http.get
-      { url = "/assets/json/pokemon_list.json"
+      { url = "assets/json/pokemon_list.json"
       , expect = Http.expectJson ReceivedPokemonList pokemonListDecoder
       }
   )
@@ -60,7 +60,7 @@ update signal model =
         Ok list ->
           ( LoadingPokemonByName list
           , Http.get
-              { url = "/assets/json/pokemon_by_french_name.json"
+              { url = "assets/json/pokemon_by_french_name.json"
               , expect = Http.expectJson ReceivedPokemonByName pokemonByNameDecoder
               }
           )
