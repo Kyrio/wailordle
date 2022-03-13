@@ -11,6 +11,7 @@ import Http
 import Random
 import Random.List
 import Task
+import Url.Builder exposing (absolute)
 
 import Game exposing (..)
 
@@ -46,7 +47,7 @@ init : () -> (Model, Cmd Signal)
 init _ =
   ( LoadingPokemonList
   , Http.get
-      { url = "assets/json/pokemon_list.json"
+      { url = absolute [ "assets", "json", "pokemon_list.json" ] []
       , expect = Http.expectJson ReceivedPokemonList pokemonListDecoder
       }
   )
@@ -60,7 +61,7 @@ update signal model =
         Ok list ->
           ( LoadingPokemonByName list
           , Http.get
-              { url = "assets/json/pokemon_by_french_name.json"
+              { url = absolute [ "assets", "json", "pokemon_by_french_name.json" ] []
               , expect = Http.expectJson ReceivedPokemonByName pokemonByNameDecoder
               }
           )
