@@ -5,7 +5,7 @@ import Browser
 import Browser.Dom
 import Dict
 import Html exposing (Html, div, form, input, text, br, span, h1, h2, a)
-import Html.Attributes exposing (class, id, type_, size, placeholder, spellcheck, value, href, style)
+import Html.Attributes exposing (class, id, type_, size, placeholder, spellcheck, value, href, style, title)
 import Html.Events exposing (onInput, onClick)
 import Http
 import Random
@@ -213,7 +213,7 @@ viewBacklogBall chosen active guess =
     c2 = if guess.identifier == active.identifier then c1 ++ " active" else c1
     c3 = if guess.identifier == chosen.identifier then c2 ++ " victory" else c2
   in
-    div [ class c3, onClick (EnteredBacklog guess) ] []
+    div [ class c3, title guess.species.names.fr, onClick (EnteredBacklog guess) ] []
 
 
 viewEmptyGuess : Html Signal
@@ -243,61 +243,79 @@ viewGuess chosen guessed =
     guessedTypeA = Maybe.withDefault "none" (Array.get 0 guessed.types)
     guessedTypeB = Maybe.withDefault "none" (Array.get 1 guessed.types)
 
-    checkTypeA =
+    testTypeA =
       if guessedTypeA == chosenTypeA then
-        div [ class "check correct" ] []
+        div [ class "guessline", title "Type à la bonne position" ]
+          [ div [ class "ribbon", styleTypeRibbon guessedTypeA ] []
+          , div [ class "check correct" ] []
+          ]
       else if guessedTypeA == chosenTypeB then
-        div [ class "check swap" ] []
+        div [ class "guessline", title "Type à la mauvaise position" ]
+          [ div [ class "ribbon", styleTypeRibbon guessedTypeA ] []
+          , div [ class "check swap" ] []
+          ]
       else
-        div [ class "check wrong" ] []
+        div [ class "guessline", title "Type absent" ]
+          [ div [ class "ribbon", styleTypeRibbon guessedTypeA ] []
+          , div [ class "check wrong" ] []
+          ]
 
-    checkTypeB =
+    testTypeB =
       if guessedTypeB == chosenTypeB then
-        div [ class "check correct" ] []
+        div [ class "guessline", title "Type à la bonne position" ]
+          [ div [ class "ribbon", styleTypeRibbon guessedTypeB ] []
+          , div [ class "check correct" ] []
+          ]
       else if guessedTypeB == chosenTypeA then
-        div [ class "check swap" ] []
+        div [ class "guessline", title "Type à la mauvaise position" ]
+          [ div [ class "ribbon", styleTypeRibbon guessedTypeB ] []
+          , div [ class "check swap" ] []
+          ]
       else
-        div [ class "check wrong" ] []
+        div [ class "guessline", title "Type absent" ]
+          [ div [ class "ribbon", styleTypeRibbon guessedTypeB ] []
+          , div [ class "check wrong" ] []
+          ]
 
-    heightTest =
+    testHeight =
       if guessed.height < chosen.height then
-        [ div [ class "ribbon too-short" ] []
-        , div [ class "check too-low" ] []
-        ]
+        div [ class "guessline", title (getPrettyHeight guessed.height ++ " (trop petit)") ]
+          [ div [ class "ribbon too-short" ] []
+          , div [ class "check too-low" ] []
+          ]
       else if guessed.height > chosen.height then
-        [ div [ class "ribbon too-tall" ] []
-        , div [ class "check too-high" ] []
-        ]
+        div [ class "guessline", title (getPrettyHeight guessed.height ++ " (trop grand)") ]
+          [ div [ class "ribbon too-tall" ] []
+          , div [ class "check too-high" ] []
+          ]
       else
-        [ div [ class "ribbon correct-height" ] []
-        , div [ class "check correct" ] []
-        ]
+        div [ class "guessline", title (getPrettyHeight guessed.height ++ " (taille exacte)") ]
+          [ div [ class "ribbon correct-height" ] []
+          , div [ class "check correct" ] []
+          ]
 
-    weightTest =
+    testWeight =
       if guessed.weight < chosen.weight then
-        [ div [ class "ribbon too-light" ] []
-        , div [ class "check too-low" ] []
-        ]
+        div [ class "guessline", title (getPrettyWeight guessed.weight ++ " (trop léger)") ]
+          [ div [ class "ribbon too-light" ] []
+          , div [ class "check too-low" ] []
+          ]
       else if guessed.weight > chosen.weight then
-        [ div [ class "ribbon too-heavy" ] []
-        , div [ class "check too-high" ] []
-        ]
+        div [ class "guessline", title (getPrettyWeight guessed.weight ++ " (trop lourd)") ]
+          [ div [ class "ribbon too-heavy" ] []
+          , div [ class "check too-high" ] []
+          ]
       else
-        [ div [ class "ribbon correct-weight" ] []
-        , div [ class "check correct" ] []
-        ]
+        div [ class "guessline", title (getPrettyWeight guessed.weight ++ " (poids exact)") ]
+          [ div [ class "ribbon correct-weight" ] []
+          , div [ class "check correct" ] []
+          ]
   in
     div [ if guessed.identifier == chosen.identifier then class "guess victory" else class "guess" ]
-      [ div [ class "guessline" ]
-          [ div [ class "ribbon", style "background-image" ("url(assets/images/types/" ++ guessedTypeA ++ ".png)") ] []
-          , checkTypeA
-          ]
-      , div [ class "guessline" ]
-          [ div [ class "ribbon", style "background-image" ("url(assets/images/types/" ++ guessedTypeB ++ ".png)") ] []
-          , checkTypeB
-          ]
-      , div [ class "guessline" ] heightTest
-      , div [ class "guessline" ] weightTest
+      [ testTypeA
+      , testTypeB
+      , testHeight
+      , testWeight
       , div [ class "guess-footer" ]
           [ div [ class "guess-pokemon" ]
               [ div [ class ("pokesprite pokemon " ++ guessed.identifier) ] []
@@ -355,3 +373,18 @@ mapVariant pokemonList variant =
 filterByName : String -> (String, List Int) -> Bool
 filterByName search (name, list) =
   String.startsWith (String.toLower search) (String.toLower name)
+
+
+getPrettyHeight : Int -> String
+getPrettyHeight height_dm =
+  "Taille : " ++ (String.fromFloat (toFloat height_dm / 10)) ++ " m"
+
+
+getPrettyWeight : Int -> String
+getPrettyWeight weight_hg =
+  "Poids : " ++ (String.fromFloat (toFloat weight_hg / 10)) ++ " kg"
+
+
+styleTypeRibbon : String -> Html.Attribute Signal
+styleTypeRibbon guessedType =
+  style "background-image" ("url(assets/images/types/" ++ guessedType ++ ".png)")

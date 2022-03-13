@@ -114,6 +114,7 @@ header {
   display: flex;
   align-items: center;
   margin-bottom: .75rem;
+  cursor: help;
 }
 
 .ribbon {
