@@ -45,9 +45,10 @@ jobs:
         if: success()
         uses: crazy-max/ghaction-github-pages@v2
         with:
-          target_branch: gh-pages
-          build_dir: dist
-          keep_history: true
-          jekyll: false
+          target_branch: 'netlify'
+          build_dir: 'dist'
+          keep_history: 'true'
+          jekyll: 'false'
+          commit_message: 'Deploy commit ${{ github.sha }}'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
