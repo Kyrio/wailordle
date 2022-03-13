@@ -10,6 +10,7 @@ import Html.Events exposing (onInput, onClick)
 import Http
 import Random
 import Random.List
+import RemoveDiacritics exposing (removeDiacritics)
 import Task
 import Url.Builder exposing (relative)
 
@@ -373,7 +374,15 @@ mapVariant pokemonList variant =
 
 filterByName : String -> (String, List Int) -> Bool
 filterByName search (name, list) =
-  String.startsWith (String.toLower search) (String.toLower name)
+  String.startsWith
+    ( search
+        |> String.toLower
+        |> removeDiacritics
+    )
+    ( name
+        |> String.toLower
+        |> removeDiacritics
+    )
 
 
 getPrettyHeight : Int -> String
