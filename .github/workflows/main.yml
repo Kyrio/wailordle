@@ -27,6 +27,7 @@ jobs:
       - name: Install Elm
         if: success()
         run: |
+          echo "Installing Elm v0.19.1 to bin directory..."
           mkdir bin
           cd bin
           curl -L -o elm.gz https://github.com/elm/compiler/releases/download/0.19.1/binary-for-linux-64-bit.gz
@@ -36,12 +37,13 @@ jobs:
       - name: Build project
         if: success()
         run: |
+          echo "Building project to dist directory..."
           mkdir dist
           cp -r assets dist
           cp index.html dist
           ./bin/elm make src/Main.elm --optimize --output=dist/scripts/main.js
 
-      - name: Deploy to GitHub Pages
+      - name: Deploy to Netlify branch
         if: success()
         uses: crazy-max/ghaction-github-pages@v2
         with:
