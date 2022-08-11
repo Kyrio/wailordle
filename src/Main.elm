@@ -10,7 +10,7 @@ import Html.Events exposing (onInput, onClick)
 import Http
 import Random
 import Random.List
-import RemoveDiacritics exposing (removeDiacritics)
+import String.Normalize exposing (removeDiacritics)
 import Task
 import Url.Builder exposing (relative)
 
