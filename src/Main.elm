@@ -4,8 +4,8 @@ import Array
 import Browser
 import Browser.Dom
 import Dict
-import Html exposing (Html, div, form, input, text, br, span, h1, h2, a)
-import Html.Attributes exposing (class, id, type_, size, placeholder, spellcheck, value, href, style, title)
+import Html exposing (Html, div, form, input, text, br, span, h1, h2)
+import Html.Attributes exposing (class, id, type_, size, placeholder, spellcheck, value, autocomplete, style, title)
 import Html.Events exposing (onInput, onClick)
 import Http
 import Random
@@ -185,13 +185,14 @@ viewGame gameData =
           Just active ->
             [ viewGuess gameData.chosen active, viewBacklog gameData.chosen active gameData.guesses ]
       )
-  , form [ class "pokemon-search" ]
+  , div [ class "pokemon-search" ]
     [ input
       [ type_ "search"
       , id "search-bar"
       , size 30
       , placeholder "Entrez le nom d'un Pokémon..."
       , spellcheck False
+      , autocomplete False
       , onInput Typed
       , value gameData.search
       ]
