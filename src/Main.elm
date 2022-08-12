@@ -4,7 +4,7 @@ import Array
 import Browser
 import Browser.Dom
 import Dict
-import Html exposing (Html, div, form, input, text, br, span, h1, h2)
+import Html exposing (Html, div, button, input, text, br, span, h1, h2)
 import Html.Attributes exposing (class, id, type_, size, placeholder, spellcheck, value, autocomplete, style, title)
 import Html.Events exposing (onInput, onClick)
 import Http
@@ -21,7 +21,7 @@ type Model
   = LoadingPokemonList
   | LoadingPokemonByName PokemonList
   | Failure
-  | Ready (PokemonList, PokemonByName, List Pokemon)
+  | Ready (PokemonList, PokemonByName)
   | Chosen GameData
 
 
@@ -32,9 +32,11 @@ type Signal
   | Typed String
   | Submitted Pokemon
   | EnteredBacklog Pokemon
+  | Rerolled
   | NoOp
 
 
+main : Program () Model Signal
 main =
   Browser.element
     { init = init
@@ -77,7 +79,7 @@ update signal model =
               let
                 filteredList = Dict.values list
               in
-                ( Ready (list, byName, filteredList)
+                ( Ready (list, byName)
                 , Random.generate ChosePokemon (Random.List.choose filteredList)
                 )
             _ ->
@@ -87,7 +89,7 @@ update signal model =
 
     ChosePokemon (maybe, rest) ->
       case model of
-        Ready (list, byName, filteredList) ->
+        Ready (list, byName) ->
           case maybe of
             Just pokemon ->
               (Chosen
@@ -145,6 +147,15 @@ update signal model =
         _ ->
           (model, Cmd.none)
 
+    Rerolled ->
+      case model of
+        Chosen gameData ->
+          ( Ready (gameData.pokemonList, gameData.pokemonByName)
+          , Random.generate ChosePokemon (Random.List.choose gameData.pokemonPool)
+          )
+        _ ->
+          (model, Cmd.none)
+
     NoOp ->
       (model, Cmd.none)
 
@@ -178,6 +189,16 @@ viewGame gameData =
       , span [ class "generation" ] [ text ("Génération " ++ String.fromInt gameData.chosen.species.generation) ]
       , text "."
       ]
+  , div [ class "toolbar" ]
+    [ button [ class "tool-button", type_ "button" ]
+        [ span [ class "tool-icon give-up" ] []
+        , text "Abandonner"
+        ]
+    , button [ class "tool-button", type_ "button", onClick Rerolled ]
+        [ span [ class "tool-icon reroll" ] []
+        , text "Nouveau tirage"
+        ]
+    ]
   , div [ class "guesses" ]
       ( case gameData.activeGuess of
           Nothing ->
@@ -186,21 +207,21 @@ viewGame gameData =
             [ viewGuess gameData.chosen active, viewBacklog gameData.chosen active gameData.guesses ]
       )
   , div [ class "pokemon-search" ]
-    [ input
-      [ type_ "search"
-      , id "search-bar"
-      , size 30
-      , placeholder "Entrez le nom d'un Pokémon..."
-      , spellcheck False
-      , autocomplete False
-      , onInput Typed
-      , value gameData.search
+      [ input
+        [ type_ "search"
+        , id "search-bar"
+        , size 30
+        , placeholder "Entrez le nom d'un Pokémon..."
+        , spellcheck False
+        , autocomplete False
+        , onInput Typed
+        , value gameData.search
+        ]
+        []
+      , div [ class "search-icon" ] []
+      , div [ class "results" ]
+          (List.map (mapSearchResult gameData.pokemonList) gameData.searchResults)
       ]
-      []
-    , div [ class "search-icon" ] []
-    , div [ class "results" ]
-        (List.map (mapSearchResult gameData.pokemonList) gameData.searchResults)
-    ]
   ]
 
 
