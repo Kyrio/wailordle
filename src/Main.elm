@@ -161,7 +161,7 @@ update signal model =
 
 
 subscriptions : Model -> Sub Signal
-subscriptions model =
+subscriptions _ =
   Sub.none
 
 

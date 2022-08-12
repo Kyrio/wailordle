@@ -34,9 +34,32 @@
 
 header {
   display: flex;
-  justify-content: center;
-  padding: 1rem;
+  flex-direction: row;
+  padding: 1rem 0rem;
   border-bottom: 1px solid #dedede;
+}
+
+.header-spacing {
+  flex: 1;
+  margin: 0rem 1rem;
+}
+
+.header-spacing.right {
+  display: flex;
+  flex-direction: row;
+  justify-content: end;
+  align-items: center;
+}
+
+.header-spacing.right a {
+  display: flex;
+}
+
+.title-letters {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  max-width: 80%;
 }
 
 .title-letter {
@@ -54,10 +77,10 @@ header {
   justify-content: center;
 }
 
-.title-wailord {
-  width: 32px;
-  height: 32px;
-  background: url('../images/favicon32.png');
+.title-letter.wailord {
+  background-image: url('../images/favicon32.png');
+  background-position: center;
+  background-repeat: no-repeat;
   image-rendering: pixelated;
 }
 
