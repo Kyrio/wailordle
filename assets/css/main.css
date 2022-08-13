@@ -28,6 +28,7 @@
 
 :root {
   --victory-color: #00d26a;
+  --failure-color: #ff6c00;;
 }
 
 * {
@@ -129,12 +130,21 @@ header {
   cursor: pointer;
 }
 
+.tool-button:disabled {
+  color: #808080;
+  cursor: inherit;
+}
+
 .tool-icon {
   display: block;
   background-size: contain;
   width: 1.1rem;
   height: 1.1rem;
   margin-right: .3rem;
+}
+
+.tool-button:disabled .tool-icon {
+  filter: grayscale(100%);
 }
 
 .give-up {
@@ -164,6 +174,10 @@ header {
 
 .guess.victory {
   border-color: var(--victory-color);
+}
+
+.guess.failure {
+  border-color: var(--failure-color);
 }
 
 .guessline {
@@ -249,6 +263,10 @@ header {
   border-color: var(--victory-color);
 }
 
+.failure .guess-pokemon {
+  border-color: var(--failure-color);
+}
+
 .empty-pokemon {
   width: 68px;
   height: 56px;
@@ -264,6 +282,10 @@ header {
 
 .victory .status {
   color: var(--victory-color);
+}
+
+.failure .status {
+  color: var(--failure-color);
 }
 
 .backlog {
@@ -292,6 +314,10 @@ header {
 
 .backlog-ball.victory {
   border-color: var(--victory-color);
+}
+
+.backlog-ball.failure {
+  border-color: var(--failure-color);
 }
 
 .pokemon-search {

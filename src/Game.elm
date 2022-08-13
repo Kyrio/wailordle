@@ -6,7 +6,8 @@ import Json.Decode as J
 
 
 type alias GameData =
-  { pokemonTable : PokemonTable
+  { status : GameStatus
+  , pokemonTable : PokemonTable
   , pokemonByName : PokemonByName
   , genPokemonByName : PokemonByName
   , pokemonPool : List Pokemon
@@ -16,6 +17,12 @@ type alias GameData =
   , guesses : List Pokemon
   , activeGuess : Maybe Pokemon
   }
+
+
+type GameStatus
+  = Guessing
+  | Failed
+  | Succeeded
 
 
 type alias PokemonTable =

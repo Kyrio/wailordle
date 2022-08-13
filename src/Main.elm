@@ -5,7 +5,7 @@ import Browser
 import Browser.Dom
 import Dict
 import Html exposing (Html, div, button, input, text, br, span, h1, h2)
-import Html.Attributes exposing (class, id, type_, size, placeholder, spellcheck, value, autocomplete, style, title)
+import Html.Attributes exposing (class, id, type_, size, placeholder, spellcheck, value, autocomplete, style, title, disabled)
 import Html.Events exposing (onInput, onClick)
 import Http
 import Random
@@ -33,6 +33,7 @@ type Signal
   | Submitted Pokemon
   | EnteredBacklog Pokemon
   | Rerolled
+  | GaveUp
   | NoOp
 
 
@@ -93,7 +94,8 @@ update signal model =
           case maybe of
             Just pokemon ->
               (Chosen
-                { pokemonTable = table
+                { status = Guessing
+                , pokemonTable = table
                 , pokemonByName = byName
                 , genPokemonByName = List.filter (filterByGen pokemon.species.generation table) byName
                 , pokemonPool = rest
@@ -127,15 +129,23 @@ update signal model =
     Submitted pokemon ->
       case model of
         Chosen gameData ->
-          ( Chosen
-              { gameData
-              | guesses = gameData.guesses ++ [ pokemon ]
-              , activeGuess = Just pokemon
-              , search = ""
-              , searchResults = []
-              }
-          , Task.attempt (\_ -> NoOp) (Browser.Dom.focus "search-bar")
-          )
+          if gameData.status == Guessing then
+            ( Chosen
+                { gameData
+                | guesses = gameData.guesses ++ [ pokemon ]
+                , activeGuess = Just pokemon
+                , search = ""
+                , searchResults = []
+                , status =
+                    if pokemon.identifier == gameData.chosen.identifier then
+                      Succeeded
+                    else
+                      Guessing
+                }
+            , Task.attempt (\_ -> NoOp) (Browser.Dom.focus "search-bar")
+            )
+          else
+            (model, Cmd.none)
         _ ->
           (model, Cmd.none)
 
@@ -153,6 +163,22 @@ update signal model =
         Chosen gameData ->
           ( Ready (gameData.pokemonTable, gameData.pokemonByName)
           , Random.generate ChosePokemon (Random.List.choose gameData.pokemonPool)
+          )
+        _ ->
+          (model, Cmd.none)
+
+    GaveUp ->
+      case model of
+        Chosen gameData ->
+          ( Chosen
+              { gameData
+              | guesses = gameData.guesses ++ [ gameData.chosen ]
+              , activeGuess = Just gameData.chosen
+              , search = ""
+              , searchResults = []
+              , status = Failed
+              }
+          , Cmd.none
           )
         _ ->
           (model, Cmd.none)
@@ -192,7 +218,7 @@ viewGame gameData =
       , text "."
       ]
   , div [ class "toolbar" ]
-    [ button [ class "tool-button", type_ "button" ]
+    [ button [ class "tool-button", type_ "button", disabled (gameData.status /= Guessing), onClick GaveUp ]
         [ span [ class "tool-icon give-up" ] []
         , text "Je ne sais pas"
         ]
@@ -206,7 +232,8 @@ viewGame gameData =
           Nothing ->
             [ viewEmptyGuess ]
           Just active ->
-            [ viewGuess gameData.chosen active, viewBacklog gameData.chosen active gameData.guesses ]
+            [ viewGuess gameData.status gameData.chosen active
+            , viewBacklog gameData.status gameData.chosen active gameData.guesses ]
       )
   , div [ class "pokemon-search" ]
       [ input
@@ -227,19 +254,26 @@ viewGame gameData =
   ]
 
 
-viewBacklog : Pokemon -> Pokemon -> List Pokemon -> Html Signal
-viewBacklog chosen activeGuess guesses =
-  div [ class "backlog" ] (List.map (viewBacklogBall chosen activeGuess) guesses)
+viewBacklog : GameStatus -> Pokemon -> Pokemon -> List Pokemon -> Html Signal
+viewBacklog status chosen activeGuess guesses =
+  div [ class "backlog" ] (List.map (viewBacklogBall status chosen activeGuess) guesses)
 
 
-viewBacklogBall : Pokemon -> Pokemon -> Pokemon -> Html Signal
-viewBacklogBall chosen active guess =
+viewBacklogBall : GameStatus -> Pokemon -> Pokemon -> Pokemon -> Html Signal
+viewBacklogBall status chosen active guess =
   let
     c1 = "backlog-ball"
-    c2 = if guess.identifier == active.identifier then c1 ++ " active" else c1
-    c3 = if guess.identifier == chosen.identifier then c2 ++ " victory" else c2
+    c2 = if guess.identifier == active.identifier then " active" else ""
+    c3 =
+      if guess.identifier /= chosen.identifier then
+        ""
+      else if status == Failed then
+        " failure"
+      else
+        " victory"
+    ballClass = c1 ++ c2 ++ c3
   in
-    div [ class c3, title guess.species.names.fr, onClick (EnteredBacklog guess) ] []
+    div [ class ballClass, title guess.species.names.fr, onClick (EnteredBacklog guess) ] []
 
 
 viewEmptyGuess : Html Signal
@@ -261,8 +295,8 @@ viewEmptyGuess =
     ]
 
 
-viewGuess : Pokemon -> Pokemon -> Html Signal
-viewGuess chosen guessed =
+viewGuess : GameStatus -> Pokemon -> Pokemon -> Html Signal
+viewGuess status chosen guessed =
   let
     chosenTypeA = Maybe.withDefault "none" (Array.get 0 chosen.types)
     chosenTypeB = Maybe.withDefault "none" (Array.get 1 chosen.types)
@@ -337,7 +371,14 @@ viewGuess chosen guessed =
           , div [ class "check correct" ] []
           ]
   in
-    div [ if guessed.identifier == chosen.identifier then class "guess victory" else class "guess" ]
+    div
+      [ if guessed.identifier /= chosen.identifier then
+          class "guess"
+        else if status == Failed then
+          class "guess failure"
+        else
+          class "guess victory"
+      ]
       [ testTypeA
       , testTypeB
       , testHeight
@@ -350,10 +391,14 @@ viewGuess chosen guessed =
               [ h1 [] [ text guessed.species.names.fr ]
               , h2 [] [ text guessed.identifier ]
               ]
-          , if guessed.identifier == chosen.identifier then
-              div [ class "status" ] [ text "Victoire !" ]
-            else
-              div [ class "status" ] []
+          , div [ class "status" ]
+            [ if guessed.identifier /= chosen.identifier then
+                text ""
+              else if status == Failed then
+                text "Dommage !"
+              else
+                text "Victoire !"
+            ]
           ]
       ]
 
