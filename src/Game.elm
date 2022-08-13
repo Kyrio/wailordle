@@ -6,7 +6,7 @@ import Json.Decode as J
 
 
 type alias GameData =
-  { pokemonList : PokemonList
+  { pokemonTable : PokemonTable
   , pokemonByName : PokemonByName
   , pokemonPool : List Pokemon
   , chosen : Pokemon
@@ -17,7 +17,7 @@ type alias GameData =
   }
 
 
-type alias PokemonList =
+type alias PokemonTable =
   Dict String Pokemon
 
 
@@ -48,8 +48,8 @@ type alias PokemonNames =
   }
 
 
-pokemonListDecoder : J.Decoder PokemonList
-pokemonListDecoder =
+pokemonTableDecoder : J.Decoder PokemonTable
+pokemonTableDecoder =
   J.dict
     ( J.map6 Pokemon
         (J.field "id" J.int)

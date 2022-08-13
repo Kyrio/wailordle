@@ -18,15 +18,15 @@ import Game exposing (..)
 
 
 type Model
-  = LoadingPokemonList
-  | LoadingPokemonByName PokemonList
+  = LoadingPokemonTable
+  | LoadingPokemonByName PokemonTable
   | Failure
-  | Ready (PokemonList, PokemonByName)
+  | Ready (PokemonTable, PokemonByName)
   | Chosen GameData
 
 
 type Signal
-  = ReceivedPokemonList (Result Http.Error PokemonList)
+  = ReceivedPokemonTable (Result Http.Error PokemonTable)
   | ReceivedPokemonByName (Result Http.Error PokemonByName)
   | ChosePokemon (Maybe Pokemon, List Pokemon)
   | Typed String
@@ -48,10 +48,10 @@ main =
 
 init : () -> (Model, Cmd Signal)
 init _ =
-  ( LoadingPokemonList
+  ( LoadingPokemonTable
   , Http.get
       { url = relative [ "assets", "json", "pokemon_list.json" ] []
-      , expect = Http.expectJson ReceivedPokemonList pokemonListDecoder
+      , expect = Http.expectJson ReceivedPokemonTable pokemonTableDecoder
       }
   )
 
@@ -59,10 +59,10 @@ init _ =
 update : Signal -> Model -> (Model, Cmd Signal)
 update signal model =
   case signal of
-    ReceivedPokemonList result ->
+    ReceivedPokemonTable result ->
       case result of
-        Ok list ->
-          ( LoadingPokemonByName list
+        Ok table ->
+          ( LoadingPokemonByName table
           , Http.get
               { url = relative [ "assets", "json", "pokemon_by_french_name.json" ] []
               , expect = Http.expectJson ReceivedPokemonByName pokemonByNameDecoder
@@ -75,12 +75,12 @@ update signal model =
       case result of
         Ok byName ->
           case model of
-            LoadingPokemonByName list ->
+            LoadingPokemonByName table ->
               let
-                filteredList = Dict.values list
+                pokemonPool = Dict.values table
               in
-                ( Ready (list, byName)
-                , Random.generate ChosePokemon (Random.List.choose filteredList)
+                ( Ready (table, byName)
+                , Random.generate ChosePokemon (Random.List.choose pokemonPool)
                 )
             _ ->
               (model, Cmd.none)
@@ -89,11 +89,11 @@ update signal model =
 
     ChosePokemon (maybe, rest) ->
       case model of
-        Ready (list, byName) ->
+        Ready (table, byName) ->
           case maybe of
             Just pokemon ->
               (Chosen
-                { pokemonList = list
+                { pokemonTable = table
                 , pokemonByName = byName
                 , pokemonPool = rest
                 , chosen = pokemon
@@ -150,7 +150,7 @@ update signal model =
     Rerolled ->
       case model of
         Chosen gameData ->
-          ( Ready (gameData.pokemonList, gameData.pokemonByName)
+          ( Ready (gameData.pokemonTable, gameData.pokemonByName)
           , Random.generate ChosePokemon (Random.List.choose gameData.pokemonPool)
           )
         _ ->
@@ -169,7 +169,7 @@ view : Model -> Html Signal
 view model =
   div [ class "app" ]
     ( case model of
-        LoadingPokemonList ->
+        LoadingPokemonTable ->
           viewLoading
         LoadingPokemonByName _ ->
           viewLoading
@@ -221,7 +221,7 @@ viewGame gameData =
         []
       , div [ class "search-icon" ] []
       , div [ class "results" ]
-          (List.map (mapSearchResult gameData.pokemonList) gameData.searchResults)
+          (List.map (mapSearchResult gameData.pokemonTable) gameData.searchResults)
       ]
   ]
 
@@ -372,17 +372,17 @@ viewReady =
   [ div [ class "alert" ] [ text "Recherche d'un Pokémon aléatoire..." ] ]
 
 
-mapSearchResult : PokemonList -> (String, List Int) -> Html Signal
-mapSearchResult pokemonList (name, list) =
-  div [ class "species" ] (List.map (mapVariant pokemonList) list)
+mapSearchResult : PokemonTable -> (String, List Int) -> Html Signal
+mapSearchResult pokemonTable (name, variants) =
+  div [ class "species" ] (List.map (mapVariant pokemonTable) variants)
 
 
-mapVariant : PokemonList -> Int -> Html Signal
-mapVariant pokemonList variant =
+mapVariant : PokemonTable -> Int -> Html Signal
+mapVariant pokemonTable variant =
   let
     key = String.fromInt variant
   in
-    case Dict.get key pokemonList of
+    case Dict.get key pokemonTable of
       Nothing ->
         div [ class "alert" ] [ text "Missingno" ]
       Just pokemon ->
@@ -396,7 +396,7 @@ mapVariant pokemonList variant =
 
 
 filterByName : String -> (String, List Int) -> Bool
-filterByName search (name, list) =
+filterByName search (name, _) =
   String.startsWith
     ( search
         |> String.toLower
