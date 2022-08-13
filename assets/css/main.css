@@ -26,6 +26,10 @@
   src: url('../fonts/CabinCondensed-Bold.ttf') format('truetype');
 }
 
+:root {
+  --victory-color: #00d26a;
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -101,7 +105,7 @@ header {
 
 .generation {
   font-weight: 700;
-  color: #5e7efa;
+  color: #529cf7;
 }
 
 .toolbar {
@@ -159,7 +163,7 @@ header {
 }
 
 .guess.victory {
-  border-color: #77b255;
+  border-color: var(--victory-color);
 }
 
 .guessline {
@@ -242,7 +246,7 @@ header {
 }
 
 .victory .guess-pokemon {
-  border-color: #77b255;
+  border-color: var(--victory-color);
 }
 
 .empty-pokemon {
@@ -256,11 +260,10 @@ header {
   font-family: 'Cabin Condensed';
   font-weight: 700;
   text-transform: uppercase;
-  color: #505050;
 }
 
 .victory .status {
-  color: #77b255;
+  color: var(--victory-color);
 }
 
 .backlog {
@@ -288,7 +291,7 @@ header {
 }
 
 .backlog-ball.victory {
-  border-color: #77b255;
+  border-color: var(--victory-color);
 }
 
 .pokemon-search {

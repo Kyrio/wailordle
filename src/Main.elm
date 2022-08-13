@@ -1,4 +1,4 @@
-module Main exposing (..)
+module Main exposing (main)
 
 import Array
 import Browser
@@ -95,6 +95,7 @@ update signal model =
               (Chosen
                 { pokemonTable = table
                 , pokemonByName = byName
+                , genPokemonByName = List.filter (filterByGen pokemon.species.generation table) byName
                 , pokemonPool = rest
                 , chosen = pokemon
                 , search = ""
@@ -117,7 +118,7 @@ update signal model =
               if String.isEmpty search then
                 []
               else
-                List.filter (filterByName search) gameData.pokemonByName
+                List.filter (filterByName search) gameData.genPokemonByName
           in
             (Chosen { gameData | search = search, searchResults = results }, Cmd.none)
         _ ->
@@ -393,6 +394,22 @@ mapVariant pokemonTable variant =
             ]
           , div [ class ("pokesprite pokemon " ++ pokemon.identifier) ] []
           ]
+
+
+filterByGen : Int -> PokemonTable -> (String, List Int) -> Bool
+filterByGen generation pokemonTable (_, variants) =
+  case List.head variants of
+    Nothing ->
+      False
+    Just variant ->
+      let
+        key = String.fromInt variant
+      in
+        case Dict.get key pokemonTable of
+          Nothing ->
+            False
+          Just pokemon ->
+            pokemon.species.generation == generation
 
 
 filterByName : String -> (String, List Int) -> Bool
