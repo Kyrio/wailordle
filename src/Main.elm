@@ -192,7 +192,7 @@ viewGame gameData =
   , div [ class "toolbar" ]
     [ button [ class "tool-button", type_ "button" ]
         [ span [ class "tool-icon give-up" ] []
-        , text "Abandonner"
+        , text "Je ne sais pas"
         ]
     , button [ class "tool-button", type_ "button", onClick Rerolled ]
         [ span [ class "tool-icon reroll" ] []

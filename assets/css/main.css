@@ -130,7 +130,7 @@ header {
   background-size: contain;
   width: 1.1rem;
   height: 1.1rem;
-  margin-right: .2rem;
+  margin-right: .3rem;
 }
 
 .give-up {
@@ -145,7 +145,7 @@ header {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-bottom: 1rem;
+  margin-bottom: 3rem;
 }
 
 .guess {
@@ -266,6 +266,9 @@ header {
 .backlog {
   display: flex;
   flex-direction: row-reverse;
+  max-width: 300px;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 .backlog-ball {
