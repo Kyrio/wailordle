@@ -187,6 +187,7 @@ viewGame gameData =
   [ div [ class "prompt" ]
       [ text "Je pense à un Pokémon de la "
       , span [ class "generation" ] [ text ("Génération " ++ String.fromInt gameData.chosen.species.generation) ]
+      , text (getSpecialFormHint gameData.chosen.identifier)
       , text "."
       ]
   , div [ class "toolbar" ]
@@ -420,3 +421,14 @@ getPrettyWeight weight_hg =
 styleTypeRibbon : String -> Html.Attribute Signal
 styleTypeRibbon guessedType =
   style "background-image" ("url(assets/images/types/" ++ guessedType ++ ".png)")
+
+
+getSpecialFormHint : String -> String
+getSpecialFormHint identifier =
+  if String.contains "-mega" identifier
+    || String.contains "-primal" identifier
+    || String.contains "-alola" identifier
+    || String.contains "-galar" identifier then
+     " (forme spéciale)"
+  else
+     ""
