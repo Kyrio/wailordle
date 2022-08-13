@@ -265,7 +265,7 @@ header {
 
 .backlog {
   display: flex;
-  flex-direction: row-reverse;
+  flex-direction: row;
   max-width: 300px;
   flex-wrap: wrap;
   justify-content: center;

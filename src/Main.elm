@@ -128,7 +128,7 @@ update signal model =
         Chosen gameData ->
           ( Chosen
               { gameData
-              | guesses = pokemon :: gameData.guesses
+              | guesses = gameData.guesses ++ [ pokemon ]
               , activeGuess = Just pokemon
               , search = ""
               , searchResults = []
