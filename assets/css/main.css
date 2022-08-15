@@ -1,0 +1,399 @@
+@font-face {
+  font-family: 'Cabin';
+  font-style: normal;
+  font-weight: 400;
+  src: url('../fonts/Cabin-Regular.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Cabin';
+  font-style: italic;
+  font-weight: 400;
+  src: url('../fonts/Cabin-Italic.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Cabin';
+  font-style: italic;
+  font-weight: 700;
+  src: url('../fonts/Cabin-BoldItalic.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: 'Cabin Condensed';
+  font-style: normal;
+  font-weight: 700;
+  src: url('../fonts/CabinCondensed-Bold.ttf') format('truetype');
+}
+
+:root {
+  --victory-color: #00d26a;
+  --failure-color: #ff6c00;;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+header {
+  display: flex;
+  flex-direction: row;
+  padding: 1rem 0rem;
+  border-bottom: 1px solid #dedede;
+}
+
+.header-spacing {
+  flex: 1;
+  margin: 0rem 1rem;
+}
+
+.header-spacing.right {
+  display: flex;
+  flex-direction: row;
+  justify-content: end;
+  align-items: center;
+}
+
+.header-spacing.right a {
+  display: flex;
+}
+
+.title-letters {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  max-width: 80%;
+}
+
+.title-letter {
+  font-family: 'Cabin Condensed';
+  font-weight: 700;
+  font-size: 20px;
+  color: #000000;
+  width: 36px;
+  height: 36px;
+  border: 2px solid #dedede;
+  border-radius: 5px;
+  margin: .1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.title-letter.wailord {
+  background-image: url('../images/favicon32.png');
+  background-position: center;
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
+}
+
+.app {
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: 'Cabin';
+  font-weight: 400;
+}
+
+.prompt {
+  margin-bottom: 1rem;
+  font-size: 0.95rem;
+  font-style: italic;
+}
+
+.generation {
+  font-weight: 700;
+  color: #529cf7;
+}
+
+.toolbar {
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: row;
+}
+
+.tool-button {
+  margin: 0 .25rem;
+  padding: .25rem .5rem;
+  background: none;
+  border: 2px solid #dedede;
+  border-radius: 5px;
+  font-family: 'Cabin';
+  font-weight: 400;
+  font-size: 0.9rem;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  cursor: pointer;
+}
+
+.tool-button:disabled {
+  color: #808080;
+  cursor: inherit;
+}
+
+.tool-icon {
+  display: block;
+  background-size: contain;
+  width: 1.1rem;
+  height: 1.1rem;
+  margin-right: .3rem;
+}
+
+.tool-button:disabled .tool-icon {
+  filter: grayscale(100%);
+}
+
+.give-up {
+  background-image: url('../images/emoji/1f636.svg');
+}
+
+.reroll {
+  background-image: url('../images/emoji/1f3b2.svg');
+}
+
+.guesses {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 3rem;
+}
+
+.guess {
+  border: 1px solid #dedede;
+  border-radius: 5px;
+  margin-bottom: .5rem;
+  padding: 1rem 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.guess.victory {
+  border-color: var(--victory-color);
+}
+
+.guess.failure {
+  border-color: var(--failure-color);
+}
+
+.guessline {
+  display: flex;
+  align-items: center;
+  margin-bottom: .75rem;
+  cursor: help;
+}
+
+.ribbon {
+  background-color: #f0f0f0;
+  background-size: contain;
+  width: 200px;
+  height: 44px;
+  border-radius: 5px;
+  margin-right: .5rem;
+}
+
+.ribbon.too-short {
+  background-image: url('../images/guesses/too_short.png');
+}
+
+.ribbon.too-tall {
+  background-image: url('../images/guesses/too_tall.png');
+}
+
+.ribbon.correct-height {
+  background-image: url('../images/guesses/correct_height.png');
+}
+
+.ribbon.too-light {
+  background-image: url('../images/guesses/too_light.png');
+}
+
+.ribbon.too-heavy {
+  background-image: url('../images/guesses/too_heavy.png');
+}
+
+.ribbon.correct-weight {
+  background-image: url('../images/guesses/correct_weight.png');
+}
+
+.check {
+  background: #f0f0f0;
+  background-position: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 5px;
+}
+
+.check.correct {
+  background-image: url('../images/emoji/2705.svg');
+}
+
+.check.wrong {
+  background-image: url('../images/emoji/1f6ab.svg');
+}
+
+.check.swap {
+  background-image: url('../images/emoji/1f503.svg');
+}
+
+.check.too-low {
+  background-image: url('../images/emoji/1f53c.svg');
+}
+
+.check.too-high {
+  background-image: url('../images/emoji/1f53d.svg');
+}
+
+.guess-footer {
+  display: flex;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+.guess-pokemon {
+  border: 1px solid #dedede;
+  border-radius: 5px;
+}
+
+.victory .guess-pokemon {
+  border-color: var(--victory-color);
+}
+
+.failure .guess-pokemon {
+  border-color: var(--failure-color);
+}
+
+.empty-pokemon {
+  width: 68px;
+  height: 56px;
+  background: no-repeat bottom url('../images/poke.png');
+  image-rendering: pixelated;
+}
+
+.status {
+  font-family: 'Cabin Condensed';
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.victory .status {
+  color: var(--victory-color);
+}
+
+.failure .status {
+  color: var(--failure-color);
+}
+
+.backlog {
+  display: flex;
+  flex-direction: row;
+  max-width: 300px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.backlog-ball {
+  width: 32px;
+  height: 32px;
+  border: 1px solid #dedede;
+  border-radius: 50%;
+  margin: 0 .1rem;
+  cursor: pointer;
+  background-image: url('../images/premier.png');
+  background-position: center;
+  image-rendering: pixelated;
+}
+
+.backlog-ball.active {
+  background-image: url('../images/poke.png');
+}
+
+.backlog-ball.victory {
+  border-color: var(--victory-color);
+}
+
+.backlog-ball.failure {
+  border-color: var(--failure-color);
+}
+
+.pokemon-search {
+  position: fixed;
+  bottom: .5rem;
+}
+
+input[type=search] {
+  height: 2.2rem;
+  padding-left: 1rem;
+  padding-right: 2rem;
+  border: 1px solid #dedede;
+  border-radius: 5px;
+  font-family: 'Cabin';
+  font-size: 0.9rem;
+  font-weight: 400;
+}
+
+.search-icon {
+  width: 1.2rem;
+  height: 1.2rem;
+  position: absolute;
+  top: .5rem;
+  right: .5rem;
+  background-image: url('../images/emoji/1f50d.svg');
+  background-size: contain;
+}
+
+.results {
+  position: absolute;
+  z-index: 10;
+  bottom: 2.5rem;
+  width: 100%;
+  max-height: 18rem;
+  border: 1px solid #dedede;
+  border-radius: 5px;
+  background-color: #ffffff;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.results:empty {
+  border: 0;
+}
+
+.variant {
+  display: flex;
+  align-items: end;
+  padding: .5rem 0;
+  cursor: pointer;
+}
+
+.variant:hover {
+  background-color: #dedede;
+}
+
+.variant .pokesprite {
+  margin-top: -16px;
+}
+
+.variant-name, .guess-name {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding-left: .5rem;
+}
+
+.variant-name h1, .guess-name h1 {
+  font-size: 0.95rem;
+  font-weight: 400;
+  color: #222222;
+}
+
+.variant-name h2, .guess-name h2 {
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: #505050;
+}

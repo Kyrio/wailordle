@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <meta property="og:title" content="Wailordle">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="https://wailordle.netlify.app/assets/images/og_image.png">
+  <meta property="og:image:type" content="image/png">
+  <meta property="og:image:width" content="256">
+  <meta property="og:image:height" content="256">
+  <meta property="og:url" content="https://wailordle.netlify.app/">
+  <meta property="og:locale" content="fr_FR">
+  <meta property="og:description" content="Devinez à quel Pokémon pense l'ordinateur. Inspiré de Wordle et Squirdle.">
+
+  <link rel="stylesheet" href="assets/css/main.css">
+  <link rel="stylesheet" href="assets/css/pokesprite-pokemon-gen8.css">
+  <link rel="icon" href="assets/images/favicon32.png">
+
+  <title>Wailordle</title>
+  <script src="scripts/main.js"></script>
+</head>
+<body>
+  <header>
+    <div class="header-spacing left"></div>
+    <div class="title-letters">
+      <div class="title-letter">W</div>
+      <div class="title-letter">A</div>
+      <div class="title-letter">I</div>
+      <div class="title-letter">L</div>
+      <div class="title-letter">O</div>
+      <div class="title-letter">R</div>
+      <div class="title-letter">D</div>
+      <div class="title-letter">L</div>
+      <div class="title-letter">E</div>
+      <div class="title-letter wailord"></div>
+    </div>
+    <div class="header-spacing right">
+      <a href="https://github.com/Kyrio/wailordle" title="Plus d'informations sur GitHub">
+        <img src="assets/images/mark-github.svg" alt="GitHub logo" width="24" height="24">
+      </a>
+    </div>
+  </header>
+
+  <div id="elmApp"></div>
+  
+  <script>
+    var app = Elm.Main.init({
+      node: document.getElementById('elmApp')
+    });
+  </script>
+</body>
+</html>
