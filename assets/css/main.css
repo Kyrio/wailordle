@@ -148,11 +148,11 @@ header {
 }
 
 .give-up {
-  background-image: url('../images/1f636.svg');
+  background-image: url('../images/emoji/1f636.svg');
 }
 
 .reroll {
-  background-image: url('../images/1f3b2.svg');
+  background-image: url('../images/emoji/1f3b2.svg');
 }
 
 .guesses {
@@ -229,23 +229,23 @@ header {
 }
 
 .check.correct {
-  background-image: url('../images/guesses/2705.svg');
+  background-image: url('../images/emoji/2705.svg');
 }
 
 .check.wrong {
-  background-image: url('../images/guesses/1f6ab.svg');
+  background-image: url('../images/emoji/1f6ab.svg');
 }
 
 .check.swap {
-  background-image: url('../images/guesses/1f503.svg');
+  background-image: url('../images/emoji/1f503.svg');
 }
 
 .check.too-low {
-  background-image: url('../images/guesses/1f53c.svg');
+  background-image: url('../images/emoji/1f53c.svg');
 }
 
 .check.too-high {
-  background-image: url('../images/guesses/1f53d.svg');
+  background-image: url('../images/emoji/1f53d.svg');
 }
 
 .guess-footer {
@@ -342,7 +342,7 @@ input[type=search] {
   position: absolute;
   top: .5rem;
   right: .5rem;
-  background-image: url('../images/1f50d.svg');
+  background-image: url('../images/emoji/1f50d.svg');
   background-size: contain;
 }
 
